@@ -1,29 +1,25 @@
 import React, { MutableRefObject, useRef } from "react";
-import {
-  authEndpoint,
-  clientId,
-  redirectUri,
-  scopes,
-} from "../../resources/config";
-import Button from "../inputs/button/button";
-import NumberInput from "../inputs/numberInput/numberInput";
-import "./alarm.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { selectIsLoggedIn } from "../authorization/authorizationSlice";
+import Button from "../inputs/button/Button";
+import NumberInput from "../inputs/numberInput/NumberInput";
+import { Player } from "../spotify/player/Player";
+import { setIsPlaying } from "../spotify/player/playerSlice";
+import { Playlist } from "../spotify/playlist/Playlist";
+import "./Alarm.scss";
 
-interface IAlarmProps {}
-
-const Alarm: React.FC<IAlarmProps> = (props: IAlarmProps) => {
+export function Alarm() {
   const _isMounted: MutableRefObject<boolean> = useRef(false);
   const [alarmTime, setAlarmTime] = React.useState<number>(0);
   const [musicTimeout, setMusicTimeout] = React.useState<number>(0);
-  const [spotifyValidated, setSpotifyValidated] =
-    React.useState<boolean>(false);
   const [time, setTime] = React.useState<number>(Date.now());
+
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     _isMounted.current = true;
-
-    // TODO: Authorize Spotify
-    // https://github.com/JoeKarlsson/react-spotify-player#react-spotify-player
 
     return function cleanup(): void {
       _isMounted.current = false;
@@ -36,37 +32,12 @@ const Alarm: React.FC<IAlarmProps> = (props: IAlarmProps) => {
 
   return (
     <div className="alarm">
-      {!spotifyValidated ? (
-        <a
-          className="btn"
-          href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-            "%20"
-          )}&response_type=token&show_dialog=true`}
-        >
-          Login to Spotify
-        </a>
-      ) : (
-        <div className="timeInputContainer">
-          <p className="pAlarm">
-            What time would you like the alarm to go off? (UTC)
-          </p>
-          <div className="timeInputRow">
-            <NumberInput name="hour" label="HH" />
-            <NumberInput name="minutes" label="MM" />
-          </div>
-          <Button
-            text="Start Alarm"
-            styleClass="btnStart"
-            action={startAlarm}
-          />
-        </div>
-      )}
-      {time ? (
+      {time && (
         <div className="divTimeDisplay">
           <p>Current time is:</p>
           <p className="currTime">{new Date(time).toTimeString()}</p>
         </div>
-      ) : null}
+      )}
       <div className="divAlarmDisplay">
         {alarmTime === 0 || alarmTime > time ? (
           <div>
@@ -81,6 +52,26 @@ const Alarm: React.FC<IAlarmProps> = (props: IAlarmProps) => {
           <h1>Wakey wakey!</h1>
         )}
       </div>
+      {isLoggedIn && (
+        <div>
+          <div className="timeInputContainer">
+            <p className="pAlarm">
+              What time would you like the alarm to go off? (UTC)
+            </p>
+            <div className="timeInputRow">
+              <NumberInput name="hour" label="HH" />
+              <NumberInput name="minutes" label="MM" />
+            </div>
+            <Button
+              text="Start Alarm"
+              styleClass="btnStart"
+              action={startAlarm}
+            />
+          </div>
+          <Playlist />
+          <Player />
+        </div>
+      )}
     </div>
   );
 
@@ -115,15 +106,13 @@ const Alarm: React.FC<IAlarmProps> = (props: IAlarmProps) => {
    * Play the music.
    */
   function playMusic(): void {
-    console.log("Starting music playback.");
+    dispatch(setIsPlaying(true));
   }
 
   /**
    * Stop the music.
    */
   function stopMusic(): void {
-    console.log("Stopping music playback.");
+    dispatch(setIsPlaying(false));
   }
-};
-
-export default Alarm;
+}

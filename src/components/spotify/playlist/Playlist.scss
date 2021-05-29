@@ -1,0 +1,65 @@
+.playlist-container {
+  .playlists {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+
+    .playlist {
+      margin: 10px;
+      opacity: 0.5;
+
+      .playlist-cover {
+        min-width: 200px;
+        min-height: 200px;
+        max-width: 200px;
+        max-height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          border-radius: 3px;
+          width: 100%;
+          height: auto;
+        }
+
+        .cover {
+          z-index: 1;
+        }
+
+        .icon {
+          z-index: 2;
+          position: absolute;
+          width: 100px;
+          opacity: 0.8;
+        }
+      }
+
+      span {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 200px;
+        max-width: 200px;
+
+        img {
+          margin-right: 5px;
+        }
+
+        p {
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .playlist:hover {
+      cursor: pointer;
+      opacity: 1;
+    }
+
+    .playlist.selected {
+      opacity: 1;
+    }
+  }
+}

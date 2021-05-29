@@ -1,5 +1,5 @@
 import React, { InputHTMLAttributes } from "react";
-import "./numberInput.scss";
+import "./NumberInput.scss";
 
 interface NumberInputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
